@@ -2,8 +2,7 @@ name: PR Lint Check
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   lint:
@@ -12,10 +11,10 @@ jobs:
     strategy:
       matrix:
         function:
-          - path: "aditya/Hellostudent"
-          - path: "shishir/HelloEmployee"
-          - path: "jai-shree-krishna/aditya/Hellostudent"
-          - path: "jai-shree-krishna/shishir/HelloEmployee"
+          - name: "Hellostudent"
+            path: "aditya/Hellostudent"
+          - name: "HelloEmployee"
+            path: "shishir/HelloEmployee"
 
     steps:
       - name: Checkout code
@@ -28,8 +27,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ${{ matrix.function }}
+        working-directory: ${{ matrix.function.path }}
 
       - name: Run Lint
         run: npm run lint --if-present
-        working-directory: ${{ matrix.function }}
+        working-directory: ${{ matrix.function.path }}
