@@ -1,15 +1,24 @@
-name: Azure Functions CI/CD
+name: PR Lint Check
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  build-and-deploy:
+  lint:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        function:
+          - path: "aditya/Hellostudent"
+          - path: "shishir/HelloEmployee"
+          - path: "jai-shree-krishna/aditya/Hellostudent"
+          - path: "jai-shree-krishna/shishir/HelloEmployee"
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -18,21 +27,9 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: |
-          if [ -f package.json ]; then npm install; else echo "No package.json, skipping npm install"; fi
+        run: npm install
+        working-directory: ${{ matrix.function }}
 
-      - name: Run tests (optional)
-        run: |
-          echo "No tests configured" 
-
-      # ✅ Azure login step (MUST HAVE)
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-
-      - name: Deploy to Azure Functions
-        uses: Azure/functions-action@v1
-        with:
-          app-name: jai-shree-krishna-func   # 
-          package: '.'
+      - name: Run Lint
+        run: npm run lint --if-present
+        working-directory: ${{ matrix.function }}
