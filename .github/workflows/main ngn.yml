@@ -1,0 +1,34 @@
+name: PR Lint Check
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        function:
+          - name: "Hellostudent"
+            path: "aditya/Hellostudent"
+          - name: "HelloEmployee"
+            path: "shishir/HelloEmployee"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ${{ matrix.function.path }}
+
+      - name: Run Lint
+        run: npm run lint --if-present
+        working-directory: ${{ matrix.function.path }}
