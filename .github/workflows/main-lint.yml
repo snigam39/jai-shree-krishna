@@ -23,22 +23,25 @@ jobs:
         shell: bash
         run: |
           echo "🔍 Searching for package.json files..."
-          for dir in $(find . -type f -name package.json -not -path "*/node_modules/*" -exec dirname {} \;); do
+          for dir in $(find . -type f -name package.json -not -path "/node_modules/" -exec dirname {} \;); do
             echo "📦 Found: $dir"
             echo "📥 Installing dependencies in $dir"
             cd "$dir"
             npm install
+
             if npm run | grep -q "lint"; then
               echo "🧹 Running linter in $dir"
               npm run lint
             else
               echo "⚠️ No lint script found in $dir"
             fi
+
             if npm run | grep -q "test"; then
               echo "🧪 Running tests in $dir"
               npm test
             else
               echo "⚠️ No test script found in $dir"
             fi
+
             cd - > /dev/null
           done
